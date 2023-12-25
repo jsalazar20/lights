@@ -33,6 +33,7 @@ App {
   NavigationStack {
     id: navigationStack
 
-    MonitorPage { }
+    //MonitorPage { }
+    MenuPage { }
   }
 }

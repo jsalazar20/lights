@@ -5,13 +5,6 @@ AppModal {
   id: modal
   pushBackContent: navigationStack
 
-  onOpened: {
-    // Start search on modal opening, if not already running or connected
-    if(!application.connected && !application.bleManager.discoveryRunning) {
-      application.bleManager.discoveryRunning = true
-    }
-  }
-
   NavigationStack {
     navigationBar.titleAlignLeft: false
 

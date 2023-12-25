@@ -28,9 +28,7 @@ App {
   // App object models
   property ApplicationModel application: ApplicationModel { }
 
-  property HeartModel heartRate: HeartModel {
-    beating: bpm > 0 && application.connected
-  }
+
 
   NavigationStack {
     id: navigationStack

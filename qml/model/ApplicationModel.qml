@@ -6,8 +6,6 @@ QtObject {
   id: appModel
 
   //property alias connected: bleHeartMonitorDevice.connected
-  //property alias bleDevice: bleHeartMonitorDevice
-  //property alias txCharacteristic: txCharacteristic
   property  list<BleDeviceModel> bleDevice_list
 
   property BluetoothLeManager bleManager : BluetoothLeManager {

@@ -32,7 +32,14 @@ AppPage {
     anchors.verticalCenter: parent.verticalCenter
     text: 'VERDE'
     onClicked: {
-      application.txCharacteristic.formatWrite("LED1;0,255,0")
+
+        for (var i = 0; i < application.bleDevice_list.length; ++i) {
+
+            var device = application.bleDevice_list[i].txCharacteristic;
+            console.debug(Object.getOwnPropertyNames(device))
+            device.formatWrite("LED1;0,255,0")
+        }
+
     }
   }
 

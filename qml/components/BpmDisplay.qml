@@ -69,6 +69,7 @@ GridLayout {
     Layout.preferredWidth: grid.width/3
     Layout.preferredHeight: dp(90)
 
+
     AppText {
       anchors.bottom: parent.bottom
       anchors.bottomMargin: dp(5)
@@ -154,3 +155,4 @@ GridLayout {
     }
   }
 }
+

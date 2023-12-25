@@ -41,6 +41,33 @@ AppPage {
     beating: heartRate.beating
   }
 
+  AppButton {
+    anchors.horizontalCenter: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    text: 'ROJO'
+    onClicked: {
+      application.txCharacteristic.formatWrite("LED1;255,0,0")
+    }
+  }
+
+  AppButton {
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    text: 'VERDE'
+    onClicked: {
+      application.txCharacteristic.formatWrite("LED1;0,255,0")
+    }
+  }
+
+  AppButton {
+    anchors.horizontalCenter: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    text: 'AZUL'
+    onClicked: {
+      application.txCharacteristic.formatWrite("LED1;0,0,255")
+    }
+  }
+
   DevicesModal {
     id: devicesModal
   }

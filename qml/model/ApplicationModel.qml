@@ -6,6 +6,7 @@ QtObject {
 
   property alias connected: bleHeartMonitorDevice.connected
   property alias bleDevice: bleHeartMonitorDevice
+  property alias txCharacteristic: txCharacteristic
 
   property BluetoothLeManager bleManager : BluetoothLeManager {
     discoveryTimeout: 30000
@@ -17,29 +18,34 @@ QtObject {
       BluetoothLeService {
         uuid: '{6e400001-b5a3-f393-e0a9-e50e24dcca9e}'
 
+
         BluetoothLeCharacteristic {
-          uuid: 0x2A37
-          dataFormat: 0x06
+          id: txCharacteristic
+          uuid: '{6e400002-b5a3-f393-e0a9-e50e24dcca9e}' // Value
+          dataFormat: 0x19 //string utf-8
 
-          onValueRawChanged: {
-            let rawData = new Uint8Array(valueRaw)
+          function formatWrite(text) {
+            let data = new Uint8Array(text.length)
+            for (var i = 0; i < text.length; i++) {
+                data[i] = text.charCodeAt(i)
+            }
+            write(data.buffer)
+          }
 
-            // Skip if not the expected size
-            if(rawData.length < 4) {
-              return;
+        }
+
+
+        BluetoothLeCharacteristic {
+          id: rxCharacteristic
+          uuid: '{6e400003-b5a3-f393-e0a9-e50e24dcca9e}' // Value
+          dataFormat: 0x19 //string utf-8
+
+            onValueChanged: value => {
+              console.debug("Received: " + value)
             }
 
-            console.debug("Raw data " + toHexString(rawData))
-
-            heartRate.bpm = rawData[1]
-          }
-
-          function toHexString(byteArray) {
-            return Array.from(byteArray, function(dataByte) {
-              return ('0' + (dataByte & 0xFF).toString(16)).slice(-2);
-            }).join('')
-          }
         }
+
       }
     }
 

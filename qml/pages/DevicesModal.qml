@@ -44,8 +44,6 @@ AppModal {
         id: devicesListView
         anchors.fill: parent
         model: application.filteredDevices
-        enabled: !application.connected
-        opacity: deviceCard.opacity == 0
 
         Behavior on opacity {
           NumberAnimation {
@@ -55,7 +53,7 @@ AppModal {
 
         delegate: AppListItem {
           text: model.name !== "" ? model.name : qsTr("Unknown")
-          detailText: qsTr("BLE Services %1").arg(model.services.length)
+          detailText: qsTr("Available")
           showDisclosure: false
           rightItem: AppIcon {
             iconType: "\uf294"
@@ -74,45 +72,45 @@ AppModal {
         }
       }
 
-      AppCard {
-        id: deviceCard
-        enabled: opacity == 1
-        opacity: application.connected
-        width: parent.width
-        margin: dp(15)
-        paper.radius: dp(5)
+//      AppCard {
+//        id: deviceCard
+//        enabled: opacity == 1
+//        opacity: 0
+//        width: parent.width
+//        margin: dp(15)
+//        paper.radius: dp(5)
 
-        paper.background.color: Theme.listItem.backgroundColor
+//        paper.background.color: Theme.listItem.backgroundColor
 
-        Behavior on opacity {
-          NumberAnimation {
-            duration: 300
-          }
-        }
+//        Behavior on opacity {
+//          NumberAnimation {
+//            duration: 300
+//          }
+//        }
 
-        content: AppText {
-          width: parent.width
-          leftPadding: dp(Theme.contentPadding)
-          topPadding: dp(Theme.contentPadding)
-          text: application.bleDevice.name !== "" ? application.bleDevice.name : qsTr("Unkown device")
-        }
+//        content: AppText {
+//          width: parent.width
+//          leftPadding: dp(Theme.contentPadding)
+//          topPadding: dp(Theme.contentPadding)
+//          text: application.bleDevice.name !== "" ? application.bleDevice.name : qsTr("Unkown device")
+//        }
 
-        actions: Row {
-          AppButton {
-            text: qsTr("Disconnect")
-            flat: false
-            horizontalMargin: dp(Theme.contentPadding)
-            verticalMargin: dp(Theme.contentPadding)
-            onClicked: {
-              NativeDialog.confirm(qsTr("Disconnect"), qsTr("Disconnect this device?"), function(accepted) {
-                if(accepted) {
-                  application.bleDevice.disconnect()
-                }
-              })
-            }
-          }
-        }
-      }
+//        actions: Row {
+//          AppButton {
+//            text: qsTr("Disconnect")
+//            flat: false
+//            horizontalMargin: dp(Theme.contentPadding)
+//            verticalMargin: dp(Theme.contentPadding)
+//            onClicked: {
+//              NativeDialog.confirm(qsTr("Disconnect"), qsTr("Disconnect this device?"), function(accepted) {
+//                if(accepted) {
+//                  application.bleDevice.disconnect()
+//                }
+//              })
+//            }
+//          }
+//        }
+//      }
     }
   }
 }

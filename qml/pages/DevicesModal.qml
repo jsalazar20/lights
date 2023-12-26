@@ -1,30 +1,16 @@
 import QtQuick 2.0
 import Felgo 4.0
 
-AppModal {
-  id: modal
-  pushBackContent: navigationStack
 
-  NavigationStack {
-    navigationBar.titleAlignLeft: false
 
     AppPage {
-      title: qsTr("Devices")
+      title: qsTr("Dispositivos")
 
-      leftBarItem: TextButtonBarItem {
-        text: "Close"
-        onClicked: {
-          if(application.bleManager.discoveryRunning) {
-            application.bleManager.discoveryRunning = false
-          }
-          modal.close()
-        }
-      }
 
       rightBarItem: TextButtonBarItem {
         id: searchButton
         visible: !application.connected
-        text: application.bleManager.discoveryRunning ? qsTr("Stop") : qsTr("Search")
+        text: application.bleManager.discoveryRunning ? qsTr("Parar") : qsTr("Buscar")
 
         onClicked: {
           application.bleManager.discoveryRunning = !application.bleManager.discoveryRunning
@@ -52,8 +38,8 @@ AppModal {
         }
 
         delegate: AppListItem {
-          text: model.name !== "" ? model.name : qsTr("Unknown")
-          detailText: qsTr("Available")
+          text: model.name !== "" ? model.name : qsTr("Desconocido")
+          detailText: qsTr("Disponible")
           showDisclosure: false
           rightItem: AppIcon {
             iconType: "\uf294"
@@ -62,7 +48,7 @@ AppModal {
           }
 
           onSelected: index => {
-            NativeDialog.confirm(qsTr("Connect"), qsTr("Connect to %1?").arg(text), function(accepted) {
+            NativeDialog.confirm(qsTr("Connect"), qsTr("Conectar a %1?").arg(text), function(accepted) {
               if(accepted) {
                 // Get the unmodified model data
                 application.connectToDevice(application.filteredDevices.get(index))
@@ -112,5 +98,5 @@ AppModal {
 //        }
 //      }
     }
-  }
-}
+
+

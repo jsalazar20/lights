@@ -34,8 +34,6 @@ App {
   property ApplicationModel application: ApplicationModel { }
 
   Navigation {
-    // enable both tabs and drawer for this demo
-    // by default, tabs are shown on iOS and a drawer on Android
     navigationMode: navigationModeTabs
 
     NavigationItem {
@@ -45,12 +43,12 @@ App {
       NavigationStack {
           id: navigationStack
 
-          //MonitorPage { }
           MenuPage { }
       }
     }
 
     NavigationItem {
+      id: devices
       title: "Dispostivos"
       iconType: IconType.gears
 
@@ -60,9 +58,14 @@ App {
     }
 
 
+    AppPage {
+      id: monitor
+      MonitorPage { }
+    }
 
 
 }
+
 
 
 

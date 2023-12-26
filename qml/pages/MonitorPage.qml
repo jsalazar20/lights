@@ -5,21 +5,8 @@ import "."
 import "../"
 
 AppPage {
-  title: qsTr("Menu")
-
-  // Use translucent navigation bar an manually handle top offset of page content
-  navigationBarTranslucency: 1
-  useSafeArea: false
-
-  rightBarItem: TextButtonBarItem {
-    text: "Devices"
-    onClicked: {
-      devicesModal.open()
-    }
-  }
-
-
-
+  title: qsTr("Juego 1")
+  tabBarHidden: true
 
   AppButton {
     anchors.horizontalCenter: parent.left
@@ -55,8 +42,6 @@ AppPage {
     }
   }
 
-  DevicesModal {
-    id: devicesModal
-  }
+
 
 }

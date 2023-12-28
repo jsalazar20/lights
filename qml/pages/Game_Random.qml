@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import Felgo 4.0
 import QtQuick.Layouts
+import QtQml
+
 
 import "."
 import "../"
@@ -32,36 +34,34 @@ AppPage {
 
   function startGame(){
         turn_off_all()
-        var random_device = pick_random_device().txCharacteristic
-        random_device.formatWrite("LED1;0,0,255")
-
-
+        var random_device = getRandomDevice()
+        random_device.txCharacteristic.formatWrite("LED1;0,0,255")
   }
 
-   function pick_random_device(){
-       var random_device = application.bleDevice_list[Math.floor(Math.random() * application.bleDevice_list.length)];
-       return random_device;
-   }
+
+  function getRandomDevice() {
+      let keys = Array.from(application.bleDevice_map.keys());
+      let key = keys[Math.floor(Math.random() * keys.length)];
+      return application.bleDevice_map.get(key)
+  }
+
+
 
    function turn_off_all(){
-       for (var i = 0; i < application.bleDevice_list.length; ++i) {
-
-           var device = application.bleDevice_list[i].txCharacteristic;
-           device.formatWrite("LED1;0,0,0")
+       for (let [name, device] of application.bleDevice_map) {
+           device.txCharacteristic.formatWrite("LED1;0,0,0");
        }
 
    }
 
-//   function check_interaction(interaction){
-//       if(interaction == random_device.tapped):
-//           if (currentRound < totalRounds) {
-//               currentRound++;
-//               startGame();
-//           }
-//           else {
-//               console.log("game finished")
-//           }
+    function check_interaction(device_name, msg){
+        console.debug(device_name + " sent:" + msg)
+    }
 
-//   }
+   Component.onCompleted: {
+       for (let [name, device] of application.bleDevice_map) {
+           device.activated.connect(check_interaction);
+       }
+   }
 
 }

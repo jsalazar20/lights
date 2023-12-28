@@ -1,5 +1,6 @@
 import Felgo 4.0
 import QtQuick 2.0
+import QtQml
 import "./"
 
 QtObject {
@@ -7,6 +8,7 @@ QtObject {
 
   //property alias connected: bleHeartMonitorDevice.connected
   property  list<BleDeviceModel> bleDevice_list
+  property  var bleDevice_map: new Map();
 
   property BluetoothLeManager bleManager : BluetoothLeManager {
     discoveryTimeout: 30000
@@ -40,6 +42,7 @@ QtObject {
     var newDevice = component.createObject();
     newDevice.setDevice(bleDevice, true)
     bleDevice_list.push(newDevice)
+    bleDevice_map.set(newDevice.name, newDevice)
   }
 
 

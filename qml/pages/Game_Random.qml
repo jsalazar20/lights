@@ -13,8 +13,7 @@ AppPage {
 
   property int currentRound: 1
   property int totalRounds: 5
-  property int correctButtonIndex: -1
-  property int device_idx: 1
+  property string selected_device_name
 
   Column{
       anchors.horizontalCenter: parent.horizontalCenter
@@ -23,7 +22,7 @@ AppPage {
       AppButton {
         text: 'INICIAR'
         onClicked: {
-          startGame()
+          gameRound()
           //application.txCharacteristic.formatWrite("LED1;255,0,0")
         }
       }
@@ -32,17 +31,18 @@ AppPage {
 
   }
 
-  function startGame(){
+  function gameRound(){
+        console.log("Round: " + currentRound + "/" + totalRounds)
         turn_off_all()
-        var random_device = getRandomDevice()
-        random_device.txCharacteristic.formatWrite("LED1;0,0,255")
+        selected_device_name = getRandomDeviceName()
+        var selected_device = application.bleDevice_map.get(selected_device_name)
+        selected_device.txCharacteristic.formatWrite("LED1;255,0,0")
   }
 
 
-  function getRandomDevice() {
+  function getRandomDeviceName() {
       let keys = Array.from(application.bleDevice_map.keys());
-      let key = keys[Math.floor(Math.random() * keys.length)];
-      return application.bleDevice_map.get(key)
+      return keys[Math.floor(Math.random() * keys.length)];
   }
 
 
@@ -56,6 +56,19 @@ AppPage {
 
     function check_interaction(device_name, msg){
         console.debug(device_name + " sent:" + msg)
+        if (device_name === selected_device_name){
+            console.log("Correct device pressed!");
+            if (currentRound < totalRounds) {
+                currentRound++;
+                gameRound();
+        }
+            else{
+                console.log("Game finished!");
+                turn_off_all();
+            }
+    } else{
+            console.log("Wrong button pressed. Try again!");
+        }
     }
 
    Component.onCompleted: {

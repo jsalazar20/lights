@@ -8,30 +8,106 @@ import "."
 import "../"
 
 AppPage {
-  title: qsTr("Juego 1")
+  id: root
+  title: qsTr("Aleatorio")
   tabBarHidden: true
 
-  property int currentRound: 1
-  property int totalRounds: 5
+  property int currentRound: 0
+  property int totalRounds: rondas.value
   property string selected_device_name
 
-  Column{
-      anchors.horizontalCenter: parent.horizontalCenter
-      anchors.verticalCenter: parent.verticalCenter
 
-      AppButton {
-        text: 'INICIAR'
-        onClicked: {
-          gameRound()
-          //application.txCharacteristic.formatWrite("LED1;255,0,0")
-        }
+  property bool running: false
+  property int elapsedTime: 0
+
+  Rectangle {
+    anchors.fill: parent
+
+    gradient: Gradient {
+      GradientStop {
+        position: 0
+        color: "#009FFF"
+      }
+      GradientStop {
+        position: 1
+        color: "#ec2F4B"
+      }
+    }
+  }
+
+
+  RowLayout{
+      visible: !root.running
+      anchors.top: parent.top
+      anchors.topMargin: dp(50)
+      AppText{
+          text: "Rondas"
       }
 
+  AppSlider {
+    id: rondas
+    from: 1
+    value: 10
+    to: 50
+  }
 
+  }
+
+  AppText {
+    id: stopwatch
+    text: formatTime(elapsedTime)
+    font.pixelSize: sp(80)
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    Timer {
+        interval: 10; running: root.running; repeat: true
+        onTriggered: elapsedTime+=10
+    }
+
+    function formatTime(milliseconds) {
+        var seconds = Math.floor(milliseconds / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
+
+        var formattedMilliseconds = Math.floor((milliseconds % 1000) / 10);
+        seconds %= 60;
+        minutes %= 60;
+
+        var formattedTime = (hours > 0 ? hours + ":" : "") +
+                            (minutes < 10 ? "0" : "") + minutes + ":" +
+                            (seconds < 10 ? "0" : "") + seconds + "." +
+                            (formattedMilliseconds < 10 ? "0" : "") + formattedMilliseconds;
+
+        return formattedTime;
+    }
+
+  }
+
+
+
+      AppText{
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: stopwatch.top
+        text: "Ronda: " + currentRound + "/" + totalRounds
+        fontSize: dp(40)
+        //visible: currentRound > 0 ? true : false
+      }
+
+      AppButton {
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        anchors.top: stopwatch.bottom
+        text: 'INICIAR'
+        visible: !root.running
+        onClicked: {
+          root.running = true
+          gameRound()
+        }
 
   }
 
   function gameRound(){
+        currentRound++;
         console.log("Round: " + currentRound + "/" + totalRounds)
         turn_off_all()
         selected_device_name = getRandomDeviceName()
@@ -59,10 +135,10 @@ AppPage {
         if (device_name === selected_device_name){
             console.log("Correct device pressed!");
             if (currentRound < totalRounds) {
-                currentRound++;
                 gameRound();
         }
             else{
+                root.running = false
                 console.log("Game finished!");
                 turn_off_all();
             }

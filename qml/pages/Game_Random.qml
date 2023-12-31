@@ -143,8 +143,22 @@ AppPage {
                 turn_off_all();
             }
     } else{
-            console.log("Wrong button pressed. Try again!");
+            console.log("Wrong button pressed");
+            root.running = false
+            turn_off_all();
+            gameOverDialog.open();
         }
+    }
++
+
+    Dialog {
+      id: gameOverDialog
+      autoSize: true
+      negativeAction: false
+      positiveAction: false
+      outsideTouchable: true
+      title: "
+             Has Perdido :("
     }
 
    Component.onCompleted: {

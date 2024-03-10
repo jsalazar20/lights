@@ -4,30 +4,28 @@ import QtQuick.Layouts
 import QtQml
 import QtMultimedia
 
-
 import "."
 import "../"
 
 AppPage {
   id: root
-  title: qsTr("Aleatorio") // Page title
+  title: qsTr("Contrarreloj") // Page title
   tabBarHidden: true
 
   // Properties for tracking game state
   property int currentRound: 0
-  property int totalRounds: rondas.value
+  property int totalTime: tiempo.value
   property string selected_device_name
 
 
   property bool running: false
-  property int elapsedTime: 0
+  property int remainingTime: tiempo.value
 
   MediaPlayer {
     id: end_audio
     audioOutput: AudioOutput {}
     source: "../../assets/beep.mp3"
   }
-
 
   // Background Rectangle with gradient
   Rectangle {
@@ -51,30 +49,35 @@ AppPage {
       anchors.top: parent.top
       anchors.topMargin: dp(50)
       AppText{
-          text: "Rondas"
+          text: "Tiempo"
       }
 
   AppSlider {
-    id: rondas
+    id: tiempo
     from: 1
-    value: 10
-    to: 50
+    value: 1000*60
+    to: 1000*60*10
+    stepSize: 10000
   }
   }
 
   // Stopwatch display
   AppText {
     id: stopwatch
-    text: formatTime(elapsedTime)
+    text: formatTime(remainingTime)
     font.pixelSize: sp(80)
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
     Timer {
         interval: 10; running: root.running; repeat: true
-        onTriggered: elapsedTime+=10
-    }
+        onTriggered: {
+            remainingTime-=10
+            check_time_finish();
 
+        }
+    }
   }
+
 
   // Function to format time in hours:minutes:seconds format
   function formatTime(milliseconds) {
@@ -94,11 +97,21 @@ AppPage {
       return formattedTime;
   }
 
+  function check_time_finish(){
+  if (remainingTime <= 0){
+      root.running = false; // Stop the game if time's up
+      turn_off_all();
+      remainingTime = 0;
+      console.log("Game finished!");
+      end_audio.play()
+    }
+  }
+
       // Display for current round
       AppText{
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: stopwatch.top
-        text: "Ronda: " + currentRound + "/" + totalRounds
+        text: "Ronda: " + currentRound
         fontSize: dp(40)
         //visible: currentRound > 0 ? true : false
       }
@@ -121,7 +134,7 @@ AppPage {
   // Function to start a new game round
   function gameRound(){
         currentRound++;
-        console.log("Round: " + currentRound + "/" + totalRounds)
+        console.log("Round: " + currentRound)
         turn_off_all()
         // Select a random device
         selected_device_name = getRandomDeviceName()
@@ -151,15 +164,7 @@ AppPage {
         console.debug(device_name + " sent:" + msg)
         if (device_name === selected_device_name){
             console.log("Correct device pressed!");
-            if (currentRound < totalRounds) {
-                gameRound();
-        }
-            else{
-                root.running = false
-                console.log("Game finished!");
-                turn_off_all();
-                end_audio.play()
-            }
+            gameRound();
     } else{
             console.log("Wrong button pressed");
             root.running = false
@@ -174,7 +179,7 @@ AppPage {
     function resetGame() {
         currentRound = 0; // Reset current round to 0
         running = false; // Set running state to false
-        elapsedTime = 0; // Reset elapsed time to 0
+        remainingTime = tiempo.value; // Reset elapsed time to 0
         selected_device_name = ""; // Clear selected device name
         turn_off_all(); // Turn off all devices
     }

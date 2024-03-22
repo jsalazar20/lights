@@ -43,7 +43,7 @@ App {
       NavigationStack {
           id: navigationStack
 
-         // MenuPage { }
+         MenuPage { }
       }
     }
 

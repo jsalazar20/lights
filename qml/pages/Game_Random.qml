@@ -7,6 +7,7 @@ import QtMultimedia
 
 import "."
 import "../"
+import "../components"
 
 AppPage {
   id: root
@@ -36,22 +37,39 @@ AppPage {
     gradient: Gradient {
       GradientStop {
         position: 0
-        color: "#009FFF"
+        color: "#4D4855"
       }
       GradientStop {
         position: 1
-        color: "#ec2F4B"
+        color: "#000000"
       }
     }
   }
+
 
   // Layout for selecting number of rounds
   RowLayout{
       visible: !root.running // Visible when game is not running
       anchors.top: parent.top
-      anchors.topMargin: dp(50)
+      anchors.topMargin: dp(10)
+      width: parent.width
+
+      Rectangle {
+          color: 'transparent'
+          Layout.fillWidth: true
+          Layout.minimumWidth: 20
+          Layout.preferredWidth: 200
+          Layout.preferredHeight: 20
+        }
+
       AppText{
           text: "Rondas"
+          Layout.fillWidth: true
+          Layout.minimumWidth: 50
+          Layout.preferredWidth: 100
+          Layout.maximumWidth: 300
+          Layout.minimumHeight: 150
+          horizontalAlignment: "AlignHCenter"
       }
 
   AppSlider {
@@ -59,8 +77,22 @@ AppPage {
     from: 1
     value: 10
     to: 50
+    Layout.fillWidth: true
+    Layout.minimumWidth: 100
+    Layout.preferredWidth: 200
+    Layout.preferredHeight: 100
   }
-  }
+
+  Rectangle {
+      color: 'transparent'
+      Layout.fillWidth: true
+      Layout.minimumWidth: 20
+      Layout.preferredWidth: 200
+      Layout.preferredHeight: 20
+    }
+ }
+
+
 
   // Stopwatch display
   AppText {
@@ -133,8 +165,12 @@ AppPage {
 
    // Function to get a random device name from available devices
   function getRandomDeviceName() {
-      let keys = Array.from(application.bleDevice_map.keys());
-      return keys[Math.floor(Math.random() * keys.length)];
+      new_name = selected_device_name
+      while (new_name === selected_device_name){
+        let keys = Array.from(application.bleDevice_map.keys());
+        new_name = keys[Math.floor(Math.random() * keys.length)];
+      }
+      return new_name;
   }
 
 
@@ -160,13 +196,7 @@ AppPage {
                 turn_off_all();
                 end_audio.play()
             }
-    } else{
-            console.log("Wrong button pressed");
-            root.running = false
-            turn_off_all();
-            gameOverDialog.open();
-            end_audio.play()
-        }
+    }
     }
 
 

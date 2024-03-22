@@ -1,8 +1,8 @@
 import Felgo 4.0
 import QtQuick 2.13
 
-import "./pages"
-import "./model"
+//import "./pages"
+//import "./model"
 
 App {
   id: app
@@ -31,7 +31,7 @@ App {
   }
 
   // App object models
-  property ApplicationModel application: ApplicationModel { }
+ // property ApplicationModel application: ApplicationModel { }
 
   Navigation {
     navigationMode: navigationModeTabs
@@ -43,7 +43,7 @@ App {
       NavigationStack {
           id: navigationStack
 
-          MenuPage { }
+         // MenuPage { }
       }
     }
 
@@ -53,20 +53,17 @@ App {
       iconType: IconType.gears
 
       NavigationStack {
-          DevicesModal {}
+       //   DevicesModal {}
       }
     }
 
-
+/*
     AppPage {
       id: monitor
       MonitorPage { }
     }
 
-
+*/
 }
-
-
-
 
   }

@@ -3,7 +3,7 @@ import QtQuick 2.0
 import QtQml
 import "./"
 
-QtObject {
+Item {
   id: appModel
 
   //property alias connected: bleHeartMonitorDevice.connected

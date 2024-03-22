@@ -1,8 +1,8 @@
 import Felgo 4.0
 import QtQuick 2.13
 
-//import "./pages"
-//import "./model"
+import "./pages"
+import "./model"
 
 App {
   id: app

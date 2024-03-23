@@ -214,15 +214,6 @@ AppPage {
         turn_off_all(); // Turn off all devices
     }
 
-    Dialog {
-      id: gameOverDialog
-      autoSize: true
-      negativeAction: false
-      positiveAction: false
-      //outsideTouchable: true
-      title: "
-             Has Perdido :("
-    }
 
    // After generating the page, connect device activation signal (bluetooth message recived) to check_interaction function.
    Component.onCompleted: {

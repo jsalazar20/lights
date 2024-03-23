@@ -43,7 +43,7 @@ AppPage {
       }
 
 
-/*
+
       Grid {
         width: parent.width
         columns: 1
@@ -100,7 +100,7 @@ AppPage {
           }
         }
       }
-      */
+
     }
   }
 

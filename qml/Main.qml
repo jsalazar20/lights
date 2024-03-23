@@ -7,6 +7,8 @@ import "./model"
 App {
   id: app
 
+
+
   onInitTheme: {
     Theme.colors.statusBarStyle = Theme.colors.statusBarStyleWhite
 
@@ -56,14 +58,11 @@ App {
           DevicesModal {}
       }
     }
-
-/*
-    AppPage {
-      id: monitor
-      MonitorPage { }
-    }
-
-*/
 }
+
+  Component.onCompleted: {
+    nativeUtils.displaySleepEnabled = true
+    nativeUtils.displaySleepEnabled = false
+  }
 
   }

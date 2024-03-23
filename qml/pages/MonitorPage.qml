@@ -1,47 +1,80 @@
 import QtQuick 2.0
 import Felgo 4.0
+import QtQuick.Layouts
+import QtQml
+import QtMultimedia
+
 
 import "."
 import "../"
+import "../components"
 
 AppPage {
-  title: qsTr("Juego 1")
+  id: root
+  title: qsTr("DRUMSET") // Page title
   tabBarHidden: true
 
-  AppButton {
-    anchors.horizontalCenter: parent.left
-    anchors.verticalCenter: parent.verticalCenter
-    text: 'ROJO'
-    onClicked: {
-      application.txCharacteristic.formatWrite("LED1;255,0,0")
-    }
+
+  property string selected_device_name
+
+
+  SoundEffect {
+    id: bombo
+    source: "../../assets/bombo.wav"
   }
 
-  AppButton {
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.verticalCenter: parent.verticalCenter
-    text: 'VERDE'
-    onClicked: {
 
-        for (var i = 0; i < application.bleDevice_list.length; ++i) {
+  // Background Rectangle with gradient
+  Rectangle {
+    anchors.fill: parent
 
-            var device = application.bleDevice_list[i].txCharacteristic;
-            console.debug(Object.getOwnPropertyNames(device))
-            device.formatWrite("LED1;0,255,0")
-        }
-
-    }
-  }
-
-  AppButton {
-    anchors.horizontalCenter: parent.right
-    anchors.verticalCenter: parent.verticalCenter
-    text: 'AZUL'
-    onClicked: {
-      application.txCharacteristic.formatWrite("LED1;0,0,255")
+    gradient: Gradient {
+      GradientStop {
+        position: 0
+        color: "#4D4855"
+      }
+      GradientStop {
+        position: 1
+        color: "#000000"
+      }
     }
   }
 
 
+   // Function to get a random device name from available devices
+  function getRandomDeviceName() {
+      let new_name = selected_device_name
+      while (new_name === selected_device_name){
+        let keys = Array.from(application.bleDevice_map.keys());
+        new_name = keys[Math.floor(Math.random() * keys.length)];
+      }
+      return new_name;
+  }
+
+
+    // Turn off all the devices
+   function turn_off_all(){
+       for (let [name, device] of application.bleDevice_map) {
+           device.txCharacteristic.formatWrite("LED1;0,0,0");
+       }
+
+   }
+
+    // Function to check interaction with devices
+    function check_interaction(device_name, msg){
+        console.debug(device_name + " sent:" + msg)
+
+        //if (device_name === selected_device_name){}
+
+    }
+
+
+
+   // After generating the page, connect device activation signal (bluetooth message recived) to check_interaction function.
+   Component.onCompleted: {
+       for (let [name, device] of application.bleDevice_map) {
+           device.activated.connect(check_interaction);
+       }
+   }
 
 }

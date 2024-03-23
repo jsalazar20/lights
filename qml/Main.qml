@@ -31,7 +31,7 @@ App {
   }
 
   // App object models
- // property ApplicationModel application: ApplicationModel { }
+  property ApplicationModel application: ApplicationModel { }
 
   Navigation {
     navigationMode: navigationModeTabs
@@ -53,7 +53,7 @@ App {
       iconType: IconType.gears
 
       NavigationStack {
-       //   DevicesModal {}
+          DevicesModal {}
       }
     }
 

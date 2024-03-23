@@ -4,9 +4,10 @@ import QtQuick.Layouts
 import QtQml
 import QtMultimedia
 
-
 import "."
 import "../"
+
+
 
 AppPage {
   id: root
@@ -17,15 +18,32 @@ AppPage {
   property int currentRound: 0
   property int totalTime: tiempo.value
   property string selected_device_name
+  property int pod_index: 0
 
 
-  property bool running: false
+  enum GameStates {
+      Stopped,
+      Prerunning,
+      Running
+  }
+
+  property int gameState: Game_Time.GameStates.Stopped
+
+
   property int remainingTime: tiempo.value
+  property int remainingDelay: delay.value
 
   MediaPlayer {
     id: end_audio
     audioOutput: AudioOutput {}
-    source: "../../assets/beep.mp3"
+    source: "../../assets/finish.mp3"
+  }
+
+  MediaPlayer {
+    id: start_audio
+    audioOutput: AudioOutput {}
+    source: "../../assets/start.mp3"
+
   }
 
   // Background Rectangle with gradient
@@ -48,7 +66,7 @@ AppPage {
 
 
   RowLayout{
-      visible: !root.running // Visible when game is not running
+      visible: gameState === Game_Time.GameStates.Stopped // Visible when game is not running
       anchors.top: parent.top
       anchors.topMargin: dp(10)
       width: parent.width
@@ -93,6 +111,128 @@ AppPage {
  }
 
 
+  // Start delay slider
+  RowLayout{
+      visible: gameState === Game_Time.GameStates.Stopped // Visible when game is not running
+      anchors.top: parent.top
+      anchors.topMargin: dp(70)
+      width: parent.width
+
+      Rectangle {
+          color: 'transparent'
+          Layout.fillWidth: true
+          Layout.minimumWidth: 20
+          Layout.preferredWidth: 200
+          Layout.preferredHeight: 20
+        }
+
+      AppText{
+          text: "Delay inicial"
+          Layout.fillWidth: true
+          Layout.minimumWidth: 50
+          Layout.preferredWidth: 100
+          Layout.maximumWidth: 300
+          Layout.minimumHeight: 150
+          horizontalAlignment: "AlignHCenter"
+      }
+
+  AppSlider {
+    id: delay
+    from: 0
+    value: 1000*5
+    to: 1000*60
+    stepSize: 5000
+    Layout.fillWidth: true
+    Layout.minimumWidth: 100
+    Layout.preferredWidth: 200
+    Layout.preferredHeight: 100
+  }
+
+  Rectangle {
+      color: 'transparent'
+      Layout.fillWidth: true
+      Layout.minimumWidth: 20
+      Layout.preferredWidth: 200
+      Layout.preferredHeight: 20
+    }
+ }
+
+  // Sequential
+  RowLayout{
+      visible: gameState === Game_Time.GameStates.Stopped // Visible when game is not running
+      anchors.top: parent.top
+      anchors.topMargin: dp(130)
+      width: parent.width
+
+      Rectangle {
+          color: 'transparent'
+          Layout.fillWidth: true
+          Layout.minimumWidth: 20
+          Layout.preferredWidth: 100
+          Layout.preferredHeight: 20
+        }
+
+      AppText{
+          text: "Secuencial"
+          Layout.fillWidth: true
+          Layout.minimumWidth: 50
+          Layout.preferredWidth: 100
+          Layout.maximumWidth: 300
+          Layout.minimumHeight: 150
+          horizontalAlignment: "AlignHCenter"
+      }
+
+  AppSwitch {
+      id: secuencial
+
+  }
+
+  Rectangle {
+
+      color: 'transparent'
+      Layout.fillWidth: true
+      Layout.minimumWidth: 20
+      Layout.preferredWidth: secuencial.checked? dp(50) : 0
+      Layout.preferredHeight: 20
+    }
+
+  AppButton {
+
+    text: 'Identificar ' + (pod_index + 1)
+    visible: secuencial.checked // Visible when game is not running
+    Layout.fillWidth: true
+    Layout.minimumWidth: 20
+    Layout.preferredWidth: 50
+    Layout.preferredHeight: 20
+    onClicked: {
+      indentifyPod()
+    }
+  }
+
+  Rectangle {
+
+      color: 'transparent'
+      Layout.fillWidth: true
+      Layout.minimumWidth: 20
+      Layout.preferredWidth: secuencial.checked? 148 : 200
+      Layout.preferredHeight: 20
+    }
+ }
+
+  function indentifyPod(){
+
+        let keys = Array.from(application.bleDevice_map.keys());
+        selected_device_name = keys[pod_index]
+        pod_index = (pod_index + 1) % keys.length;
+        var selected_device = application.bleDevice_map.get(selected_device_name)
+
+        turn_off_all()
+        // Turn it red
+        selected_device.txCharacteristic.formatWrite("LED1;255,0,0")
+  }
+
+
+
   // Stopwatch display
   AppText {
     id: stopwatch
@@ -100,16 +240,38 @@ AppPage {
     font.pixelSize: sp(80)
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
+
     Timer {
-        interval: 10; running: root.running; repeat: true
+        interval: 10; running: gameState === Game_Time.GameStates.Running; repeat: true
         onTriggered: {
             remainingTime-=10
             check_time_finish();
-
         }
     }
   }
 
+    //Delay time display
+  AppText{
+      text: formatTime(remainingDelay)
+      Layout.fillWidth: true
+      Layout.minimumWidth: 50
+      Layout.preferredWidth: 100
+      Layout.maximumWidth: 300
+      Layout.minimumHeight: 150
+      horizontalAlignment: "AlignHCenter"
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.bottom
+      anchors.verticalCenterOffset: -dp(100)
+
+      Timer {
+          interval: 10; running: gameState === Game_Time.GameStates.Prerunning; repeat: true
+          onTriggered: {
+              remainingDelay-=10
+              check_prerunning_finish();
+
+          }
+      }
+  }
 
   // Function to format time in hours:minutes:seconds format
   function formatTime(milliseconds) {
@@ -131,13 +293,25 @@ AppPage {
 
   function check_time_finish(){
   if (remainingTime <= 0){
-      root.running = false; // Stop the game if time's up
+      gameState = Game_Time.GameStates.Stopped // Stop the game if time's up
       turn_off_all();
       remainingTime = 0;
       console.log("Game finished!");
       end_audio.play()
     }
   }
+
+  function check_prerunning_finish(){
+  if (remainingDelay > 1 && remainingDelay <= 2400 && start_audio.playbackState === MediaPlayer.StoppedState){
+    start_audio.play()
+  }
+
+  if (remainingDelay <= 0){
+      gameState = Game_Time.GameStates.Running // Stop the game if time's up
+      remainingDelay = 0;
+    }
+  }
+
 
       // Display for current round
       AppText{
@@ -154,10 +328,10 @@ AppPage {
 
         anchors.top: stopwatch.bottom
         text: 'INICIAR'
-        visible: !root.running // Visible when game is not running
+        visible: gameState === Game_Time.GameStates.Stopped // Visible when game is not running
         onClicked: {
           resetGame() // If there was a previous game, restart the game variables
-          root.running = true
+          gameState = Game_Time.GameStates.Prerunning
           gameRound() // Start the first round
         }
 
@@ -168,8 +342,8 @@ AppPage {
         currentRound++;
         console.log("Round: " + currentRound)
         turn_off_all()
-        // Select a random device
-        selected_device_name = getRandomDeviceName()
+        // Select a  device
+        selected_device_name = secuencial.checked ? getNextDevice() : getRandomDeviceName()
         var selected_device = application.bleDevice_map.get(selected_device_name)
 
         // Turn it green
@@ -187,6 +361,14 @@ AppPage {
   }
 
 
+  function getNextDevice(){
+      let keys = Array.from(application.bleDevice_map.keys());
+      selected_device_name = keys[pod_index]
+      pod_index = (pod_index + 1) % keys.length;
+      return selected_device_name
+  }
+
+
     // Turn off all the devices
    function turn_off_all(){
        for (let [name, device] of application.bleDevice_map) {
@@ -198,7 +380,7 @@ AppPage {
     // Function to check interaction with devices
     function check_interaction(device_name, msg){
         console.debug(device_name + " sent:" + msg)
-        if (device_name === selected_device_name){
+        if (device_name === selected_device_name && gameState === Game_Time.GameStates.Running){
             console.log("Correct device pressed!");
             gameRound();
     }
@@ -208,9 +390,11 @@ AppPage {
     // Reset the game state
     function resetGame() {
         currentRound = 0; // Reset current round to 0
-        running = false; // Set running state to false
+        gameState = Game_Time.GameStates.Stopped
         remainingTime = tiempo.value; // Reset elapsed time to 0
+        remainingDelay = delay.value;
         selected_device_name = ""; // Clear selected device name
+        pod_index = 0;
         turn_off_all(); // Turn off all devices
     }
 

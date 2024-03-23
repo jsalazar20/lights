@@ -178,7 +178,7 @@ AppPage {
 
    // Function to get a random device name from available devices
   function getRandomDeviceName() {
-      new_name = selected_device_name
+      let new_name = selected_device_name
       while (new_name === selected_device_name){
         let keys = Array.from(application.bleDevice_map.keys());
         new_name = keys[Math.floor(Math.random() * keys.length)];

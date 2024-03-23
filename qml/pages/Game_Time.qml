@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQml
 import QtMultimedia
 
+
 import "."
 import "../"
 
@@ -218,7 +219,7 @@ AppPage {
       autoSize: true
       negativeAction: false
       positiveAction: false
-      outsideTouchable: true
+      //outsideTouchable: true
       title: "
              Has Perdido :("
     }
